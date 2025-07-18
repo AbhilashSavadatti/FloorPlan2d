@@ -181,3 +181,72 @@ This project is licensed under the MIT License.
 ---
 
 **FloorPlan AI** - Transforming architectural drawings into intelligent digital plans with the power of artificial intelligence.
+
+## 📋 System Architecture
+
+### High-Level Architecture
+
+```mermaid
+graph TD
+    subgraph Frontend
+        A[React/TypeScript UI] -->|Upload Image| B[API Client]
+        B -->|Display Results| C[Interactive Canvas]
+        C -->|User Interaction| A
+    end
+    
+    subgraph Backend
+        D[Flask Server] -->|Process| E[YOLOv8 Model]
+        E -->|Detections| D
+        D -->|Process| F[OpenCV]
+        F -->|Measurements| D
+    end
+    
+    B <-->|REST API| D
+```
+
+### Data Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant Backend
+    participant YOLOv8
+    
+    User->>Frontend: Upload Floor Plan Image
+    Frontend->>Backend: POST /api/detect (with image)
+    Backend->>YOLOv8: Process Image
+    YOLOv8-->>Backend: Raw Detections
+    Backend->>Backend: Process Detections & Calculate Metrics
+    Backend-->>Frontend: Structured Analysis Data
+    Frontend->>Frontend: Render Visualization
+    Frontend-->>User: Display Analysis Results
+```
+
+### Component Architecture
+
+```mermaid
+classDiagram
+    class FloorPlanUploader {
+        +handleFileSelect()
+        +validateImage()
+        +previewImage()
+    }
+    
+    class AnalysisResults {
+        -detections: Detection[]
+        +renderRoomOverlay()
+        +calculateArea()
+        +exportResults()
+    }
+    
+    class useFloorPlanAnalysis {
+        +analyzeFloorPlan()
+        +resetAnalysis()
+        +error: string | null
+    }
+    
+    FloorPlanUploader --> useFloorPlanAnalysis
+    AnalysisResults --> useFloorPlanAnalysis
+```
+
